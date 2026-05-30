@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Sent Messages{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Messages</p><h1>Sent</h1></div>
+    <a href="{% url 'inbox' %}" class="btn btn-secondary">Inbox</a></div>
+<div class="panel" style="padding: 0;">
+<table class="data-table">
+    <thead><tr><th>To</th><th>Subject</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody>
+    {% for m in messages_list %}
+    <tr><td>{{ m.recipient.username|default:m.recipient_role|default:"IT Admin" }}</td>
+        <td><a href="{% url 'message_detail' m.id %}">{{ m.subject }}</a></td>
+        <td><span class="status status-{{ m.status|lower }}">{{ m.get_status_display }}</span></td>
+        <td><small>{{ m.created_at|date:"M d, H:i" }}</small></td></tr>
+    {% empty %}<tr><td colspan="4" class="empty">Nothing sent.</td></tr>{% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Create User{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Account</p><h1>Create User Account</h1>
+    <p class="subtitle">For teaching staff with class assignments, use the "Add Staff" page instead.</p></div></div>
+
+<div class="panel" style="max-width: 600px;"><form method="post">{% csrf_token %}
+    <div class="form-row">
+        <div><label>Username *</label><input name="username" required></div>
+        <div><label>Password *</label><input type="password" name="password" required></div>
+    </div>
+    <div class="form-row">
+        <div><label>First Name</label><input name="first_name"></div>
+        <div><label>Last Name</label><input name="last_name"></div>
+    </div>
+    <label>Role *</label><select name="role" required>
+        {% for k, v in roles %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+    </select>
+    <div class="form-row" style="margin-top: 1rem;">
+        <div><label>Email</label><input type="email" name="email"></div>
+        <div><label>Phone</label><input name="phone"></div>
+    </div>
+    <label>Residence</label><input name="residence">
+    <div style="margin-top: 1rem;">
+        <button type="submit" class="btn">Create</button>
+        <a href="{% url 'user_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form></div>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <p class="eyebrow">{{ user.get_role_display }}</p>
+        <h1>Welcome, {{ user.get_full_name|default:user.username }}</h1>
+        <p class="subtitle">Here's what's happening today.</p>
+    </div>
+</div>
+
+{% if user.is_it_admin or user.is_headmaster or user.is_asst_headmaster %}
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-label">Total Students</div>
+        <div class="stat-value">{{ total_students }}</div>
+        <div class="stat-sub">{{ total_boys }} boys · {{ total_girls }} girls</div>
+    </div>
+    <div class="stat-card gold">
+        <div class="stat-label">Teaching Staff</div>
+        <div class="stat-value">{{ total_teachers }}</div>
+        <div class="stat-sub">{{ total_male_staff }} male · {{ total_female_staff }} female</div>
+    </div>
+    <div class="stat-card amber">
+        <div class="stat-label">Payments Pending</div>
+        <div class="stat-value">{{ pending_payments }}</div>
+        <div class="stat-sub">awaiting IT approval</div>
+    </div>
+    <div class="stat-card rust">
+        <div class="stat-label">Unread Notifications</div>
+        <div class="stat-value">{{ unread_notifications }}</div>
+    </div>
+</div>
+
+<div class="two-col">
+    <div class="panel">
+        <div class="panel-title"><h3>Recent Exam Submissions</h3>
+            <a href="{% url 'exam_dashboard' %}" class="small">View all →</a></div>
+        {% if recent_exams %}
+            <table class="data-table">
+                <thead><tr><th>Student</th><th>Subject</th><th>Score</th><th>Status</th></tr></thead>
+                <tbody>
+                {% for r in recent_exams %}
+                <tr>
+                    <td>{{ r.student.full_name }}</td>
+                    <td>{{ r.subject.code }}</td>
+                    <td>{{ r.score }}/{{ r.max_score }}</td>
+                    <td><span class="status status-{{ r.status|lower }}">{{ r.get_status_display }}</span></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty">No exam results yet.</div>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <div class="panel-title"><h3>Quick Actions</h3></div>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            {% if user.is_it_admin %}
+                <a href="{% url 'create_student' %}" class="btn">+ Enroll new student</a>
+                <a href="{% url 'create_teacher' %}" class="btn btn-secondary">+ Add staff member</a>
+                <a href="{% url 'create_user' %}" class="btn btn-secondary">+ Create user account</a>
+                <a href="{% url 'handle_renewals' %}" class="btn btn-gold">Handle session renewals</a>
+                <a href="{% url 'audit_log_list' %}" class="btn btn-secondary">View audit log</a>
+            {% endif %}
+            {% if user.is_asst_headmaster %}
+                <a href="{% url 'asst_hm_pending' %}" class="btn">Review pending exam results</a>
+                <a href="{% url 'create_reminder' %}" class="btn btn-gold">Send reminder to teachers</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% elif user.is_teacher or user.is_class_teacher %}
+<div class="stat-grid">
+    {% if teacher %}
+    <div class="stat-card">
+        <div class="stat-label">Employee ID</div>
+        <div class="stat-value" style="font-size: 1.4rem;">{{ teacher.employee_id }}</div>
+    </div>
+    <div class="stat-card gold">
+        <div class="stat-label">Classes Taught</div>
+        <div class="stat-value">{{ my_classes.count }}</div>
+    </div>
+    {% endif %}
+    <div class="stat-card amber">
+        <div class="stat-label">Session Expires</div>
+        <div class="stat-value" style="font-size: 1.1rem;">{{ user.session_expires_at|time:"H:i" }}</div>
+        <div class="stat-sub">{{ user.session_expires_at|date:"F j" }}</div>
+    </div>
+</div>
+
+<div class="two-col">
+    <div class="panel">
+        <div class="panel-title"><h3>My Recent Submissions</h3>
+            <a href="{% url 'submit_result' %}" class="btn btn-sm">+ New result</a></div>
+        {% if recent_exams %}
+            <table class="data-table">
+                <thead><tr><th>Student</th><th>Subject</th><th>Score</th><th>Status</th></tr></thead>
+                <tbody>
+                {% for r in recent_exams %}
+                <tr><td>{{ r.student.full_name }}</td><td>{{ r.subject.code }}</td>
+                    <td>{{ r.score }}/{{ r.max_score }}</td>
+                    <td><span class="status status-{{ r.status|lower }}">{{ r.get_status_display }}</span></td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty">No submissions yet.</div>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <div class="panel-title"><h3>My Class</h3></div>
+        {% if my_class_students %}
+            <p class="muted small">{{ my_class_students.count }} student{{ my_class_students.count|pluralize }}</p>
+            <a href="{% url 'class_teacher_pending' %}" class="btn">Review pending results</a>
+        {% else %}
+            <p class="muted small">You are not assigned as a class teacher.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% elif user.is_finance or user.is_hr %}
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-label">Total Students</div>
+        <div class="stat-value">{{ total_students }}</div>
+    </div>
+    <div class="stat-card gold">
+        <div class="stat-label">Staff Members</div>
+        <div class="stat-value">{{ total_teachers }}</div>
+        <div class="stat-sub">{{ total_male_staff }} M · {{ total_female_staff }} F</div>
+    </div>
+    {% if user.is_finance %}
+    <div class="stat-card amber">
+        <div class="stat-label">Pending Payments</div>
+        <div class="stat-value">{{ pending_payments }}</div>
+    </div>
+    <div class="stat-card rust">
+        <div class="stat-label">Students Owing</div>
+        <div class="stat-value">{{ students_with_balance }}</div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="panel">
+    <div class="panel-title"><h3>Quick Actions</h3></div>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        {% if user.is_finance %}
+            <a href="{% url 'finance_submit_payment' %}" class="btn">+ Record payment</a>
+            <a href="{% url 'outstanding_balances' %}" class="btn btn-secondary">View outstanding balances</a>
+            <a href="{% url 'class_performance' %}" class="btn btn-secondary">Class collection report</a>
+        {% endif %}
+        <a href="{% url 'student_list' %}" class="btn btn-secondary">View students</a>
+        <a href="{% url 'teacher_list' %}" class="btn btn-secondary">View staff</a>
+        <a href="{% url 'compose_message' %}" class="btn btn-gold">Message IT Admin</a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

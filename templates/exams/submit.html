@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Submit Result{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Examination</p><h1>Submit Exam Result</h1>
+    <p class="subtitle">After submission, the class teacher will review, then the Assistant Headmaster will finalize.</p></div></div>
+
+<div class="panel" style="max-width: 700px;"><form method="post">{% csrf_token %}
+    <div class="form-row">
+        <div><label>Student *</label><select name="student_id" required>
+            <option value="">Select student</option>
+            {% for s in students %}<option value="{{ s.id }}">{{ s.full_name }} ({{ s.student_id }})</option>{% endfor %}
+        </select></div>
+        <div><label>Subject *</label><select name="subject_id" required>
+            {% for s in subjects %}<option value="{{ s.id }}">{{ s.code }} — {{ s.name }}</option>{% endfor %}
+        </select></div>
+    </div>
+    <div class="form-row">
+        <div><label>Exam Session *</label><select name="exam_session_id" required>
+            {% for s in sessions %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+        </select></div>
+        <div><label>Score *</label><input type="number" step="0.01" name="score" required></div>
+        <div><label>Out of *</label><input type="number" step="0.01" name="max_score" value="100" required></div>
+    </div>
+    <label>Teacher's Remarks</label><textarea name="teacher_remarks" placeholder="Observations about the student's performance..."></textarea>
+    <div style="margin-top: 1rem;">
+        <button type="submit" class="btn">Submit Result</button>
+        <a href="{% url 'exam_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form></div>
+{% endblock %}

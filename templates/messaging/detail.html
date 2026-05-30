@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}{{ msg.subject }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><p class="eyebrow">{{ msg.get_category_display }} · {{ msg.get_priority_display }}</p>
+        <h1>{{ msg.subject }}</h1>
+        <p class="subtitle">From {{ msg.sender.get_full_name|default:msg.sender.username }} · {{ msg.created_at|date:"M d, Y H:i" }}</p></div>
+    <div>
+        {% if msg.status != 'RESOLVED' and msg.status != 'CLOSED' %}
+            <a href="{% url 'resolve_message' msg.id %}" class="btn btn-secondary">Mark Resolved</a>
+        {% endif %}
+        <span class="status status-{{ msg.status|lower }}">{{ msg.get_status_display }}</span>
+    </div>
+</div>
+
+<div class="panel">
+    <p>{{ msg.body|linebreaks }}</p>
+    {% if msg.attachment %}<p><a href="{{ msg.attachment.url }}" target="_blank" class="btn btn-sm btn-secondary">Attachment</a></p>{% endif %}
+</div>
+
+{% if replies %}
+<h3>Replies</h3>
+{% for r in replies %}
+<div class="panel" style="margin-left: 2rem;">
+    <p class="muted small" style="margin: 0 0 0.5rem;"><strong>{{ r.sender.get_full_name|default:r.sender.username }}</strong> · {{ r.created_at|date:"M d, H:i" }}</p>
+    <p>{{ r.body|linebreaks }}</p>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="panel">
+    <h3>Reply</h3>
+    <form method="post" action="{% url 'reply_message' msg.id %}">{% csrf_token %}
+        <textarea name="body" rows="4" required placeholder="Type your reply..."></textarea>
+        <div style="margin-top: 0.5rem;"><button type="submit" class="btn">Send Reply</button></div>
+    </form>
+</div>
+{% endblock %}

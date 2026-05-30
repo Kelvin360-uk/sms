@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}{{ teacher.full_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><p class="eyebrow">Staff Profile</p><h1>{{ teacher.full_name }}</h1>
+        <p class="subtitle">{{ teacher.employee_id }} · {{ teacher.get_staff_type_display }}</p></div>
+    {% if user.is_it_admin %}<a href="{% url 'edit_teacher' teacher.id %}" class="btn btn-secondary">Edit</a>{% endif %}
+</div>
+
+<div class="two-col">
+    <div class="panel"><div class="panel-title"><h3>Contact</h3></div>
+        <dl class="kv-list">
+            <dt>Email</dt><dd>{{ teacher.email }}</dd>
+            <dt>Phone</dt><dd>{{ teacher.phone }}</dd>
+            <dt>Residence</dt><dd>{{ teacher.residence }}</dd>
+            <dt>Hired</dt><dd>{{ teacher.hire_date }}</dd>
+        </dl>
+    </div>
+    <div class="panel"><div class="panel-title"><h3>Teaching Assignment</h3></div>
+        <dl class="kv-list">
+            <dt>Class Teacher</dt><dd>{% if teacher.is_class_teacher %}{{ teacher.assigned_class.name|default:"—" }}{% else %}No{% endif %}</dd>
+            <dt>Classes</dt><dd>{% for c in teacher.classes_taught.all %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</dd>
+            <dt>Subjects</dt><dd>{% for s in teacher.subjects_taught.all %}{{ s.code }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</dd>
+        </dl>
+    </div>
+</div>
+{% endblock %}

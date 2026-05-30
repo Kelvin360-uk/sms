@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}New Exam Session{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Create Exam Session</h1></div></div>
+<div class="panel" style="max-width: 700px;"><form method="post">{% csrf_token %}
+    <label>Session Name *</label><input name="name" required placeholder="e.g. First Term 2025">
+    <div class="form-row" style="margin-top: 1rem;">
+        <div><label>Academic Year *</label><input name="academic_year" required value="2025-2026"></div>
+        <div><label>Start Date *</label><input type="date" name="start_date" required></div>
+        <div><label>End Date *</label><input type="date" name="end_date" required></div>
+    </div>
+    <label>Submission Deadline *</label><input type="datetime-local" name="submission_deadline" required>
+    <div style="margin-top: 1rem;">
+        <button type="submit" class="btn">Create Session</button>
+        <a href="{% url 'exam_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form></div>
+{% endblock %}

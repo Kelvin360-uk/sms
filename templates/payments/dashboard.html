@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Payments{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><p class="eyebrow">Finance</p><h1>Payments</h1></div>
+    <div>
+        {% if user.is_finance %}<a href="{% url 'finance_submit_payment' %}" class="btn">+ Record Payment</a>{% endif %}
+        <a href="{% url 'outstanding_balances' %}" class="btn btn-secondary">Outstanding</a>
+        <a href="{% url 'class_performance' %}" class="btn btn-secondary">By Class</a>
+    </div>
+</div>
+
+{% if total_collected is not None %}
+<div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Total Collected</div>
+        <div class="stat-value">{{ total_collected|floatformat:2 }}</div></div>
+    <div class="stat-card rust"><div class="stat-label">Students Owing</div>
+        <div class="stat-value">{{ students_owing }}</div></div>
+</div>
+{% endif %}
+
+{% if pending_approval %}
+<div class="panel">
+    <div class="panel-title"><h3>Pending IT Admin Approval</h3>
+        <span class="muted small">{{ pending_approval.count }} payments awaiting</span></div>
+    <table class="data-table">
+        <thead><tr><th>Student</th><th>Amount</th><th>Method</th><th>Submitted By</th><th>Submitted</th><th></th></tr></thead>
+        <tbody>
+        {% for p in pending_approval %}
+        <tr><td>{{ p.student.full_name }}</td><td><strong>{{ p.amount_paid }}</strong></td>
+            <td>{{ p.get_payment_method_display }}</td>
+            <td>{{ p.finance_user.get_full_name|default:p.finance_user.username }}</td>
+            <td>{{ p.finance_approved_at|date:"M d, H:i" }}</td>
+            <td><a href="{% url 'it_admin_approve_payment' p.id %}" class="btn btn-sm">Approve</a></td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if pending_finance %}
+<div class="panel">
+    <div class="panel-title"><h3>New Payments (Finance Queue)</h3></div>
+    <table class="data-table">
+        <thead><tr><th>Student</th><th>Amount</th><th>Method</th><th>Submitted</th><th></th></tr></thead>
+        <tbody>
+        {% for p in pending_finance %}
+        <tr><td>{{ p.student.full_name }}</td><td>{{ p.amount_paid }}</td>
+            <td>{{ p.get_payment_method_display }}</td><td>{{ p.created_at|date:"M d, H:i" }}</td>
+            <td><a href="{% url 'payment_detail' p.id %}" class="btn btn-sm btn-secondary">View</a></td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if pending_it %}
+<div class="panel">
+    <div class="panel-title"><h3>Awaiting IT Admin</h3></div>
+    <table class="data-table">
+        <thead><tr><th>Student</th><th>Amount</th><th>Submitted</th><th></th></tr></thead>
+        <tbody>
+        {% for p in pending_it %}
+        <tr><td>{{ p.student.full_name }}</td><td>{{ p.amount_paid }}</td>
+            <td>{{ p.finance_approved_at|date:"M d, H:i" }}</td>
+            <td><a href="{% url 'payment_detail' p.id %}" class="btn btn-sm btn-secondary">View</a>
+                <a href="{% url 'edit_payment' p.id %}" class="btn btn-sm btn-ghost">Edit</a></td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if by_class %}
+<div class="panel">
+    <div class="panel-title"><h3>Class Collection Snapshot</h3>
+        <a href="{% url 'class_performance' %}" class="small">Full report →</a></div>
+    <table class="data-table">
+        <thead><tr><th>Class</th><th>Students</th><th>Owing</th></tr></thead>
+        <tbody>
+        {% for c in by_class %}
+        <tr><td>{{ c.name }}</td><td>{{ c.students }}</td><td>{{ c.owing }}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

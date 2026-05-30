@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Enroll Student{% endblock %}
+
+{% block content %}
+<div class="page-header"><div>
+    <p class="eyebrow">New Enrollment</p>
+    <h1>Add Student</h1>
+</div></div>
+
+<div class="panel">
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-row">
+        <div><label>Student ID *</label><input name="student_id" required></div>
+        <div><label>Full Name *</label><input name="full_name" required></div>
+    </div>
+    <div class="form-row">
+        <div><label>Date of Birth *</label><input type="date" name="date_of_birth" required></div>
+        <div><label>Gender *</label>
+            <select name="gender" required><option value="M">Male</option><option value="F">Female</option></select>
+        </div>
+    </div>
+    <div class="form-row">
+        <div><label>Place of Residence *</label><input name="residence" required></div>
+        <div><label>Class</label>
+            <select name="current_class"><option value="">—</option>
+                {% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+            </select>
+        </div>
+    </div>
+    <h3 style="margin-top: 1.5rem;">Parent / Guardian</h3>
+    <div class="form-row">
+        <div><label>Name *</label><input name="parent_guardian_name" required></div>
+        <div><label>Relationship</label><input name="parent_guardian_relation" value="Guardian"></div>
+    </div>
+    <div class="form-row">
+        <div><label>Telephone *</label><input type="tel" name="parent_guardian_phone" required></div>
+        <div><label>Email</label><input type="email" name="parent_guardian_email"></div>
+    </div>
+    <h3 style="margin-top: 1.5rem;">Fees</h3>
+    <div class="form-row">
+        <div><label>Total Fees Due (per year)</label><input type="number" step="0.01" name="total_fees_due" value="0"></div>
+    </div>
+    <div style="margin-top: 1.5rem;">
+        <button type="submit" class="btn">Enroll Student</button>
+        <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+</div>
+{% endblock %}

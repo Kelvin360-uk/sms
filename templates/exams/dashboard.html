@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Exams{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><p class="eyebrow">Examinations</p><h1>Exam Hub</h1></div>
+    <div>
+        {% if user.is_teacher or user.is_class_teacher %}
+            <a href="{% url 'submit_result' %}" class="btn">+ Submit Result</a>
+        {% endif %}
+        {% if user.is_class_teacher %}
+            <a href="{% url 'class_teacher_pending' %}" class="btn btn-gold">Review my class</a>
+        {% endif %}
+        {% if user.is_asst_headmaster %}
+            <a href="{% url 'asst_hm_pending' %}" class="btn btn-gold">Finalize Results</a>
+            <a href="{% url 'create_reminder' %}" class="btn btn-secondary">Send Reminder</a>
+        {% endif %}
+        {% if user.is_it_admin %}
+            <a href="{% url 'create_exam_session' %}" class="btn btn-secondary">+ Exam Session</a>
+        {% endif %}
+    </div>
+</div>
+
+{% if sessions %}
+<div class="panel"><div class="panel-title"><h3>Active Exam Sessions</h3></div>
+    <table class="data-table">
+        <thead><tr><th>Name</th><th>Year</th><th>Start</th><th>End</th><th>Deadline</th></tr></thead>
+        <tbody>
+        {% for s in sessions %}
+        <tr><td><strong>{{ s.name }}</strong></td><td>{{ s.academic_year }}</td>
+            <td>{{ s.start_date }}</td><td>{{ s.end_date }}</td><td>{{ s.submission_deadline|date:"M d, Y H:i" }}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if my_results %}
+<div class="panel"><div class="panel-title"><h3>My Recent Submissions</h3></div>
+    <table class="data-table">
+        <thead><tr><th>Student</th><th>Subject</th><th>Score</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for r in my_results %}
+        <tr><td>{{ r.student.full_name }}</td><td>{{ r.subject.code }}</td>
+            <td>{{ r.score }}/{{ r.max_score }}</td>
+            <td><span class="status status-{{ r.status|lower }}">{{ r.get_status_display }}</span></td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if pending_finalization %}
+<div class="panel"><div class="panel-title"><h3>Pending Your Finalization</h3>
+    <a href="{% url 'asst_hm_pending' %}" class="small">View all →</a></div>
+    <table class="data-table">
+        <thead><tr><th>Student</th><th>Subject</th><th>Score</th><th>Class Teacher</th><th></th></tr></thead>
+        <tbody>
+        {% for r in pending_finalization %}
+        <tr><td>{{ r.student.full_name }}</td><td>{{ r.subject.code }}</td>
+            <td>{{ r.score }}/{{ r.max_score }}</td>
+            <td>{{ r.class_teacher_signature.get_full_name }}</td>
+            <td><a href="{% url 'asst_hm_finalize' r.id %}" class="btn btn-sm">Finalize</a></td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if recent_results %}
+<div class="panel"><div class="panel-title"><h3>Recent Activity</h3></div>
+    <table class="data-table">
+        <thead><tr><th>Student</th><th>Subject</th><th>Teacher</th><th>Score</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for r in recent_results %}
+        <tr><td>{{ r.student.full_name }}</td><td>{{ r.subject.code }}</td>
+            <td>{{ r.teacher.full_name }}</td><td>{{ r.score }}/{{ r.max_score }}</td>
+            <td><span class="status status-{{ r.status|lower }}">{{ r.get_status_display }}</span></td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

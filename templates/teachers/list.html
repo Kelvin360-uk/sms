@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Teachers{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><p class="eyebrow">Roster</p><h1>Teaching & Non-Teaching Staff</h1>
+        <p class="subtitle">{{ total }} total · {{ total_male }} male · {{ total_female }} female</p></div>
+    <div>
+        {% if user.is_it_admin %}
+            <a href="{% url 'create_teacher' %}" class="btn">+ Add Staff</a>
+            <a href="{% url 'export_teachers' %}" class="btn btn-secondary">Export CSV</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="toolbar">
+    <form method="get" class="search-form">
+        <input type="search" name="q" placeholder="Search by name or employee ID..." value="{{ q }}">
+        <select name="gender">
+            <option value="">All</option>
+            <option value="M" {% if request.GET.gender == 'M' %}selected{% endif %}>Male</option>
+            <option value="F" {% if request.GET.gender == 'F' %}selected{% endif %}>Female</option>
+        </select>
+        <button type="submit" class="btn btn-sm">Filter</button>
+    </form>
+</div>
+
+<div class="panel" style="padding: 0;">
+    <table class="data-table">
+        <thead><tr><th>Employee ID</th><th>Name</th><th>Type</th><th>Class Teacher</th><th>Phone</th><th>Email</th><th></th></tr></thead>
+        <tbody>
+        {% for t in teachers %}
+        <tr><td><strong>{{ t.employee_id }}</strong></td><td>{{ t.full_name }}</td>
+            <td>{{ t.get_staff_type_display }}</td>
+            <td>{% if t.is_class_teacher %}<span class="status status-approved">{{ t.assigned_class.name|default:"Yes" }}</span>{% else %}—{% endif %}</td>
+            <td>{{ t.phone }}</td><td>{{ t.email }}</td>
+            <td><a href="{% url 'teacher_detail' t.id %}" class="btn btn-sm btn-secondary">View</a></td>
+        </tr>
+        {% empty %}<tr><td colspan="7" class="empty">No staff records.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

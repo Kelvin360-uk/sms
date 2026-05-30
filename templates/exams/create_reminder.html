@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Send Reminder{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Asst Headmaster</p><h1>Send Exam Deadline Reminder</h1></div></div>
+<div class="panel" style="max-width: 700px;"><form method="post">{% csrf_token %}
+    <label>Exam Session *</label><select name="exam_session_id" required>
+        {% for s in sessions %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+    </select>
+    <label style="margin-top: 1rem;">Title *</label><input name="title" required placeholder="e.g. Final Exam Scores Due Friday">
+    <label>Message *</label><textarea name="message" rows="5" required></textarea>
+    <div class="form-row">
+        <div><label>Deadline *</label><input type="datetime-local" name="deadline" required></div>
+        <div><label>Target Role</label><select name="target_role">
+            <option value="TEACHER">Teachers</option>
+            <option value="CLASS_TEACHER">Class Teachers</option>
+        </select></div>
+    </div>
+    <div style="margin-top: 1rem;">
+        <button type="submit" class="btn">Send to All</button>
+        <a href="{% url 'exam_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form></div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}{{ student.full_name }} Results{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><p class="eyebrow">Exam Results</p><h1>{{ student.full_name }}</h1>
+        <p class="subtitle">{{ student.student_id }} · {{ student.current_class.name|default:"Unassigned" }}</p></div>
+    {% if user.is_it_admin %}
+        <a href="{% url 'download_results' student.id %}" class="btn btn-secondary">Download CSV</a>
+    {% endif %}
+</div>
+
+<div class="panel" style="padding: 0;">
+<table class="data-table">
+    <thead><tr><th>Session</th><th>Subject</th><th>Score</th><th>Grade</th><th>Status</th><th>Class T. Remarks</th><th>Asst HM Remarks</th></tr></thead>
+    <tbody>
+    {% for r in results %}
+    <tr><td>{{ r.exam_session.name }}</td><td>{{ r.subject.code }}</td>
+        <td><strong>{{ r.score }}/{{ r.max_score }}</strong></td><td>{{ r.grade }}</td>
+        <td><span class="status status-{{ r.status|lower }}">{{ r.get_status_display }}</span></td>
+        <td>{{ r.class_teacher_remarks|truncatechars:50|default:"—" }}</td>
+        <td>{{ r.asst_headmaster_remarks|truncatechars:50|default:"—" }}</td></tr>
+    {% empty %}<tr><td colspan="7" class="empty">No results recorded.</td></tr>{% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

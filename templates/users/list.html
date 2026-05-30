@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}User Accounts{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><p class="eyebrow">Administration</p><h1>User Accounts</h1></div>
+    <div>
+        <a href="{% url 'create_user' %}" class="btn">+ Create User</a>
+        <a href="{% url 'grant_download' %}" class="btn btn-secondary">Grant Downloads</a>
+        <a href="{% url 'handle_renewals' %}" class="btn btn-gold">Session Renewals</a>
+    </div>
+</div>
+
+<div class="panel" style="padding: 0;">
+<table class="data-table">
+    <thead><tr><th>Username</th><th>Full Name</th><th>Role</th><th>Active</th><th>Session</th><th>Last Login</th></tr></thead>
+    <tbody>
+    {% for u in users %}
+    <tr><td><strong>{{ u.username }}</strong></td>
+        <td>{{ u.get_full_name|default:"—" }}</td>
+        <td><span class="status status-draft">{{ u.get_role_display }}</span></td>
+        <td>{% if u.is_active %}✓{% else %}<span class="muted">disabled</span>{% endif %}</td>
+        <td>{% if u.is_active_session %}<span class="status status-approved">Active</span>{% if u.session_expires_at %} <small class="muted">until {{ u.session_expires_at|time:"H:i" }}</small>{% endif %}{% else %}<span class="muted">offline</span>{% endif %}</td>
+        <td><small>{{ u.last_login|default:"never"|date:"M d, H:i" }}</small></td>
+    </tr>
+    {% empty %}<tr><td colspan="6" class="empty">No users.</td></tr>{% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

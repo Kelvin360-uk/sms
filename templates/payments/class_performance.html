@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Class Collection Performance{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Finance Report</p><h1>Class Fee Collection Performance</h1></div></div>
+<div class="panel" style="padding: 0;">
+<table class="data-table">
+    <thead><tr><th>Class</th><th>Students</th><th>Owing</th><th>Total Due</th><th>Total Paid</th><th>Collection %</th></tr></thead>
+    <tbody>
+    {% for c in classes %}
+    <tr><td><strong>{{ c.name }}</strong></td><td>{{ c.total_students }}</td>
+        <td>{{ c.owing_students }}</td>
+        <td>{{ c.total_due|default:0|floatformat:2 }}</td>
+        <td>{{ c.total_paid|default:0|floatformat:2 }}</td>
+        <td>{% if c.total_due %}{% widthratio c.total_paid c.total_due 100 %}%{% else %}—{% endif %}</td>
+    </tr>
+    {% empty %}<tr><td colspan="6" class="empty">No classes.</td></tr>{% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

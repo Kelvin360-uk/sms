@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Approve Payment{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">IT Admin Approval</p>
+    <h1>{{ payment.student.full_name }} — {{ payment.amount_paid }}</h1></div></div>
+
+<div class="two-col">
+    <div class="panel"><div class="panel-title"><h3>Payment Details</h3></div>
+        <dl class="kv-list">
+            <dt>Amount</dt><dd><strong>{{ payment.amount_paid }}</strong></dd>
+            <dt>Method</dt><dd>{{ payment.get_payment_method_display }}</dd>
+            <dt>Transaction ID</dt><dd>{{ payment.transaction_id|default:"—" }}</dd>
+            <dt>Submitted By</dt><dd>{{ payment.finance_user.get_full_name }}</dd>
+            <dt>Submitted At</dt><dd>{{ payment.finance_approved_at }}</dd>
+            <dt>Current Balance</dt><dd>{{ payment.student.outstanding_balance }}</dd>
+        </dl>
+        {% if payment.note_file %}<a href="{{ payment.note_file.url }}" target="_blank" class="btn btn-sm btn-secondary" style="margin-top: 1rem;">View Note</a>{% endif %}
+        {% if payment.receipt_image %}<a href="{{ payment.receipt_image.url }}" target="_blank" class="btn btn-sm btn-secondary">View Receipt</a>{% endif %}
+    </div>
+
+    <div class="panel"><div class="panel-title"><h3>Decision</h3></div>
+        <form method="post">{% csrf_token %}
+            <label>Notes (optional)</label>
+            <textarea name="notes" rows="3"></textarea>
+            <label style="margin-top: 1rem;">Rejection Reason (only if rejecting)</label>
+            <textarea name="reason" rows="2"></textarea>
+            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                <button type="submit" name="action" value="approve" class="btn">Approve</button>
+                <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
+                <a href="{% url 'payment_dashboard' %}" class="btn btn-secondary">Back</a>
+            </div>
+            <p class="muted small" style="margin-top: 1rem;">Once approved, this payment is permanently in the ledger. Errors must be reversed, not edited.</p>
+        </form>
+    </div>
+</div>
+{% endblock %}

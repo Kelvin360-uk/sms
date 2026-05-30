@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Request Session Renewal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Account</p>
+        <h1>Request Session Renewal</h1>
+        <p class="subtitle">Your session has expired or is about to. Submit a request and the IT Admin will renew it.</p>
+    </div>
+</div>
+
+<div class="panel" style="max-width: 600px;">
+    <form method="post">
+        {% csrf_token %}
+        <label for="reason">Reason (optional)</label>
+        <textarea name="reason" id="reason" placeholder="e.g. continuing exam grade entry"></textarea>
+        <div style="margin-top: 1rem;">
+            <button type="submit" class="btn">Submit Renewal Request</button>
+            <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

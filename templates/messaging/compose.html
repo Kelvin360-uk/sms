@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Compose Message{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Compose Message</h1>
+    <p class="subtitle">Default recipient is IT Admin. Use this for access requests, problems, or enrollment requests.</p></div></div>
+
+<div class="panel" style="max-width: 700px;"><form method="post" enctype="multipart/form-data">{% csrf_token %}
+    <div class="form-row">
+        <div><label>Send to specific user</label><select name="recipient_id">
+            <option value="">— Or pick a role below —</option>
+            {% for u in users %}<option value="{{ u.id }}">{{ u.username }} ({{ u.get_role_display }})</option>{% endfor %}
+        </select></div>
+        <div><label>...or to a role</label><select name="recipient_role">
+            <option value="">— Default IT Admin —</option>
+            {% for k, v in roles %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+        </select></div>
+    </div>
+    <div class="form-row">
+        <div><label>Category</label><select name="category">
+            {% for k, v in categories %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+        </select></div>
+        <div><label>Priority</label><select name="priority">
+            {% for k, v in priorities %}<option value="{{ k }}" {% if k == 'NORMAL' %}selected{% endif %}>{{ v }}</option>{% endfor %}
+        </select></div>
+    </div>
+    <label>Subject *</label><input name="subject" required>
+    <label>Message *</label><textarea name="body" rows="8" required></textarea>
+    <label>Attachment</label><input type="file" name="attachment">
+    <div style="margin-top: 1rem;">
+        <button type="submit" class="btn">Send</button>
+        <a href="{% url 'inbox' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form></div>
+{% endblock %}

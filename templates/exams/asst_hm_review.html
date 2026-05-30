@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Finalize Result{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Asst Headmaster Finalization</p>
+    <h1>{{ result.student.full_name }} — {{ result.subject.code }}</h1></div></div>
+
+<div class="two-col">
+    <div class="panel">
+        <div class="panel-title"><h3>Result Trail</h3></div>
+        <dl class="kv-list">
+            <dt>Score</dt><dd><strong>{{ result.score }} / {{ result.max_score }}</strong> ({{ result.grade }})</dd>
+            <dt>Subject Teacher</dt><dd>{{ result.teacher.full_name }}</dd>
+            <dt>Teacher Remarks</dt><dd>{{ result.teacher_remarks|default:"—" }}</dd>
+            <dt>Class Teacher</dt><dd>{{ result.class_teacher_signature.get_full_name }} ({{ result.class_teacher_signed_at|date:"M d, H:i" }})</dd>
+            <dt>Class Teacher Remarks</dt><dd>{{ result.class_teacher_remarks|default:"—" }}</dd>
+        </dl>
+    </div>
+    <div class="panel">
+        <div class="panel-title"><h3>Your Finalization</h3></div>
+        <form method="post">{% csrf_token %}
+            <label>Assistant Headmaster Remarks</label>
+            <textarea name="remarks" rows="6" placeholder="Final remarks for the student's report..."></textarea>
+            <p class="muted small" style="margin-top: 0.5rem;">Your signature is attached and the report is finalized.</p>
+            <div style="margin-top: 1rem;">
+                <button type="submit" class="btn">Sign & Finalize</button>
+                <a href="{% url 'asst_hm_pending' %}" class="btn btn-secondary">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

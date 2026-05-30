@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Statistics{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Reports</p><h1>Student Statistics</h1></div></div>
+
+<div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value">{{ total_students }}</div></div>
+    <div class="stat-card gold"><div class="stat-label">Boys</div><div class="stat-value">{{ boys }}</div></div>
+    <div class="stat-card amber"><div class="stat-label">Girls</div><div class="stat-value">{{ girls }}</div></div>
+</div>
+
+<div class="panel">
+    <div class="panel-title"><h3>Breakdown by Class</h3></div>
+    <table class="data-table">
+        <thead><tr><th>Class</th><th>Boys</th><th>Girls</th><th>Total</th></tr></thead>
+        <tbody>
+        {% for c in by_class %}
+        <tr><td><a href="{% url 'class_detail' c.id %}">{{ c.name }}</a></td>
+            <td>{{ c.boys }}</td><td>{{ c.girls }}</td><td><strong>{{ c.total }}</strong></td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Students{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Roster</p>
+        <h1>Students</h1>
+        <p class="subtitle">{{ total }} total · {{ total_boys }} boys · {{ total_girls }} girls</p>
+    </div>
+    <div>
+        {% if user.is_it_admin %}
+            <a href="{% url 'create_student' %}" class="btn">+ Enroll Student</a>
+            <a href="{% url 'export_students' %}" class="btn btn-secondary">Export CSV</a>
+        {% endif %}
+        {% if user.can_view_all or user.is_finance or user.is_hr %}
+            <a href="{% url 'student_statistics' %}" class="btn btn-secondary">Statistics</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="toolbar">
+    <form method="get" class="search-form">
+        <input type="search" name="q" placeholder="Search by name or student ID..." value="{{ q }}">
+        <select name="class">
+            <option value="">All classes</option>
+            {% for c in classes %}<option value="{{ c.id }}" {% if request.GET.class == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+        </select>
+        <select name="gender">
+            <option value="">All genders</option>
+            <option value="M" {% if request.GET.gender == 'M' %}selected{% endif %}>Boys</option>
+            <option value="F" {% if request.GET.gender == 'F' %}selected{% endif %}>Girls</option>
+        </select>
+        <button type="submit" class="btn btn-sm">Filter</button>
+    </form>
+</div>
+
+<div class="panel" style="padding: 0;">
+    <table class="data-table">
+        <thead>
+            <tr><th>Student ID</th><th>Full Name</th><th>Gender</th><th>Class</th>
+                <th>Parent Phone</th><th>Outstanding</th><th></th></tr>
+        </thead>
+        <tbody>
+        {% for s in students %}
+        <tr>
+            <td><strong>{{ s.student_id }}</strong></td>
+            <td>{{ s.full_name }}</td>
+            <td>{{ s.get_gender_display }}</td>
+            <td>{{ s.current_class.name|default:"—" }}</td>
+            <td>{{ s.parent_guardian_phone }}</td>
+            <td>
+                {% if s.outstanding_balance > 0 %}
+                    <span class="status status-pending">{{ s.outstanding_balance }}</span>
+                {% else %}
+                    <span class="status status-approved">Cleared</span>
+                {% endif %}
+            </td>
+            <td><a href="{% url 'student_detail' s.id %}" class="btn btn-sm btn-secondary">View</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="empty">No students match the filter.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

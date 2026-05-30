@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Edit {{ student.full_name }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Edit</p><h1>{{ student.full_name }}</h1></div></div>
+
+<div class="panel"><form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-row">
+        <div><label>Full Name</label><input name="full_name" value="{{ student.full_name }}" required></div>
+        <div><label>Class</label><select name="current_class">
+            {% for c in classes %}<option value="{{ c.id }}" {% if c.id == student.current_class_id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+        </select></div>
+    </div>
+    <div class="form-row">
+        <div><label>Residence</label><input name="residence" value="{{ student.residence }}" required></div>
+        <div><label>Total Fees Due</label><input type="number" step="0.01" name="total_fees_due" value="{{ student.total_fees_due }}"></div>
+    </div>
+    <div class="form-row">
+        <div><label>Parent / Guardian Name</label><input name="parent_guardian_name" value="{{ student.parent_guardian_name }}" required></div>
+        <div><label>Parent Phone</label><input name="parent_guardian_phone" value="{{ student.parent_guardian_phone }}" required></div>
+    </div>
+    <div class="form-row">
+        <div><label>Parent Email</label><input type="email" name="parent_guardian_email" value="{{ student.parent_guardian_email }}"></div>
+    </div>
+    <button type="submit" class="btn">Save Changes</button>
+    <a href="{% url 'student_detail' student.id %}" class="btn btn-secondary">Cancel</a>
+</form></div>
+{% endblock %}

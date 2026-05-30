@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Review Result{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Class Teacher Review</p>
+    <h1>{{ result.student.full_name }} — {{ result.subject.code }}</h1></div></div>
+
+<div class="two-col">
+    <div class="panel">
+        <div class="panel-title"><h3>Result Details</h3></div>
+        <dl class="kv-list">
+            <dt>Score</dt><dd><strong>{{ result.score }} / {{ result.max_score }}</strong> ({{ result.grade }})</dd>
+            <dt>Subject Teacher</dt><dd>{{ result.teacher.full_name }}</dd>
+            <dt>Exam Session</dt><dd>{{ result.exam_session.name }}</dd>
+            <dt>Teacher's Remarks</dt><dd>{{ result.teacher_remarks|default:"—" }}</dd>
+        </dl>
+    </div>
+    <div class="panel">
+        <div class="panel-title"><h3>Your Review</h3></div>
+        <form method="post">{% csrf_token %}
+            <label>Class Teacher Remarks</label>
+            <textarea name="remarks" rows="6" placeholder="Your observations about this student's overall performance..."></textarea>
+            <p class="muted small" style="margin-top: 0.5rem;">By submitting, your signature is attached and the result moves to the Assistant Headmaster for finalization.</p>
+            <div style="margin-top: 1rem;">
+                <button type="submit" class="btn">Sign & Forward</button>
+                <a href="{% url 'class_teacher_pending' %}" class="btn btn-secondary">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

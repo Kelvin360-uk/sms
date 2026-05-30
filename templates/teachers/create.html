@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Add Staff{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Staff</p><h1>Add New Staff Member</h1></div></div>
+
+<div class="panel"><form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h3>Account</h3>
+    <div class="form-row">
+        <div><label>Username *</label><input name="username" required></div>
+        <div><label>Password *</label><input type="password" name="password" required></div>
+        <div><label>Role *</label>
+            <select name="role" required>
+                <option value="TEACHER">Teacher</option>
+                <option value="CLASS_TEACHER">Class Teacher</option>
+                <option value="FINANCE">Finance</option>
+                <option value="HR">HR</option>
+                <option value="HEADMASTER">Headmaster</option>
+                <option value="ASST_HEADMASTER">Asst Headmaster</option>
+            </select>
+        </div>
+    </div>
+    <h3 style="margin-top: 1.5rem;">Profile</h3>
+    <div class="form-row">
+        <div><label>Employee ID *</label><input name="employee_id" required></div>
+        <div><label>Full Name *</label><input name="full_name" required></div>
+    </div>
+    <div class="form-row">
+        <div><label>First Name</label><input name="first_name"></div>
+        <div><label>Last Name</label><input name="last_name"></div>
+    </div>
+    <div class="form-row">
+        <div><label>Gender *</label><select name="gender" required><option value="M">Male</option><option value="F">Female</option></select></div>
+        <div><label>Date of Birth</label><input type="date" name="date_of_birth"></div>
+        <div><label>Staff Type</label><select name="staff_type"><option value="TEACHING">Teaching</option><option value="NON_TEACHING">Non-Teaching</option></select></div>
+    </div>
+    <div class="form-row">
+        <div><label>Email *</label><input type="email" name="email" required></div>
+        <div><label>Phone *</label><input type="tel" name="phone" required></div>
+    </div>
+    <div class="form-row">
+        <div><label>Place of Residence *</label><input name="residence" required></div>
+        <div><label>Assigned Class (if class teacher)</label>
+            <select name="assigned_class"><option value="">—</option>
+                {% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-row">
+        <div><label>Subjects Taught (hold Ctrl/Cmd to select multiple)</label>
+            <select name="subjects" multiple size="5">
+                {% for s in subjects %}<option value="{{ s.id }}">{{ s.code }} — {{ s.name }}</option>{% endfor %}
+            </select>
+        </div>
+        <div><label>Classes Taught</label>
+            <select name="classes" multiple size="5">
+                {% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn">Create Staff Member</button>
+    <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Cancel</a>
+</form></div>
+{% endblock %}

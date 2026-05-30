@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+{% block body_class %}login-body{% endblock %}
+
+{% block content %}
+<div class="login-shell">
+    <div class="login-card">
+        <div class="login-brand">
+            <div class="mark">◇</div>
+            <h1>School Management</h1>
+            <p class="school">Sign in to continue</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div style="margin-bottom: 1rem;">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" autofocus required autocomplete="username">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn" style="width: 100%;">Sign In</button>
+        </form>
+
+        <p class="muted small" style="text-align: center; margin-top: 1.5rem;">
+            Trouble signing in? Contact your IT Administrator.
+        </p>
+    </div>
+</div>
+{% endblock %}

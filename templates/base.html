@@ -1,0 +1,86 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SMS{% endblock %} | School Management System</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+{% if user.is_authenticated %}
+<header class="topbar">
+    <div class="topbar-inner">
+        <a href="{% url 'dashboard' %}" class="brand">
+            <span class="brand-mark">◇</span>
+            <span class="brand-text">SMS</span>
+        </a>
+
+        <nav class="primary-nav">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+
+            {% if user.is_it_admin or user.is_headmaster or user.is_asst_headmaster or user.is_finance or user.is_hr %}
+                <a href="{% url 'student_list' %}">Students</a>
+                <a href="{% url 'teacher_list' %}">Teachers</a>
+            {% endif %}
+
+            {% if user.is_teacher or user.is_class_teacher %}
+                <a href="{% url 'student_list' %}">Students</a>
+                <a href="{% url 'exam_dashboard' %}">Exams</a>
+            {% endif %}
+
+            {% if user.is_it_admin or user.is_headmaster or user.is_asst_headmaster %}
+                <a href="{% url 'exam_dashboard' %}">Exams</a>
+            {% endif %}
+
+            {% if user.is_finance or user.is_it_admin or user.is_headmaster or user.is_asst_headmaster or user.is_hr %}
+                <a href="{% url 'payment_dashboard' %}">Payments</a>
+            {% endif %}
+
+            <a href="{% url 'inbox' %}">Messages</a>
+
+            {% if user.is_it_admin or user.is_headmaster %}
+                <a href="{% url 'audit_log_list' %}">Audit</a>
+            {% endif %}
+        </nav>
+
+        <div class="topbar-right">
+            <a href="{% url 'notification_list' %}" class="notif-bell">
+                <span>🔔</span>
+                {% if unread_notifications %}
+                    <span class="badge">{{ unread_notifications }}</span>
+                {% endif %}
+            </a>
+            <div class="user-pill">
+                <span class="role-tag">{{ user.get_role_display }}</span>
+                <span>{{ user.get_full_name|default:user.username }}</span>
+            </div>
+            <form method="post" action="{% url 'logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-ghost">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+{% endif %}
+
+<main class="main">
+    {% if messages %}
+    <div class="flash-stack">
+        {% for message in messages %}
+        <div class="flash flash-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+    <span>{% now "Y" %} School Management System</span>
+</footer>
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

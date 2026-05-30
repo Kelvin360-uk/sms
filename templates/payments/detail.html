@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Payment {{ payment.id }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><p class="eyebrow">Payment Record</p>
+        <h1>{{ payment.student.full_name }} — {{ payment.amount_paid }}</h1>
+        <p class="subtitle"><span class="status status-{{ payment.status|lower }}">{{ payment.get_status_display }}</span></p></div>
+    <div>
+        {% if user.is_it_admin and payment.status == 'PENDING_IT' %}
+            <a href="{% url 'it_admin_approve_payment' payment.id %}" class="btn">Approve / Reject</a>
+        {% endif %}
+        {% if user.is_it_admin and payment.status == 'APPROVED' and not payment.reversal_of %}
+            <a href="{% url 'reverse_payment' payment.id %}" class="btn btn-danger">Reverse</a>
+        {% endif %}
+        {% if user.is_finance and not payment.is_immutable and payment.finance_user_id == user.id %}
+            <a href="{% url 'edit_payment' payment.id %}" class="btn btn-secondary">Edit</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="two-col">
+    <div class="panel"><div class="panel-title"><h3>Payment</h3></div>
+        <dl class="kv-list">
+            <dt>Student</dt><dd><a href="{% url 'student_detail' payment.student.id %}">{{ payment.student.full_name }}</a></dd>
+            <dt>Student ID</dt><dd>{{ payment.student.student_id }}</dd>
+            <dt>Amount</dt><dd><strong>{{ payment.amount_paid }}</strong></dd>
+            <dt>Method</dt><dd>{{ payment.get_payment_method_display }}</dd>
+            <dt>Transaction ID</dt><dd>{{ payment.transaction_id|default:"—" }}</dd>
+            <dt>Payment Date</dt><dd>{{ payment.payment_date }}</dd>
+            <dt>Year</dt><dd>{{ payment.academic_year }}</dd>
+            <dt>Semester</dt><dd>{{ payment.semester|default:"—" }}</dd>
+        </dl>
+    </div>
+
+    <div class="panel"><div class="panel-title"><h3>Approval Trail</h3></div>
+        <dl class="kv-list">
+            <dt>Finance</dt><dd>{{ payment.finance_user.get_full_name|default:payment.finance_user.username }}<br>
+                <small class="muted">{{ payment.finance_approved_at|date:"M d, Y H:i" }}</small></dd>
+            {% if payment.hm_approval_user %}
+                <dt>HM/Asst HM</dt><dd>{{ payment.hm_approval_user.get_full_name }}<br>
+                    <small class="muted">{{ payment.hm_approved_at }}</small></dd>
+            {% endif %}
+            {% if payment.it_admin_user %}
+                <dt>IT Admin</dt><dd>{{ payment.it_admin_user.get_full_name|default:payment.it_admin_user.username }}<br>
+                    <small class="muted">{{ payment.it_admin_approved_at }}</small></dd>
+            {% else %}
+                <dt>IT Admin</dt><dd class="muted">Pending</dd>
+            {% endif %}
+        </dl>
+        {% if payment.rejection_reason %}
+            <p style="margin-top: 1rem; color: var(--red);"><strong>Rejection reason:</strong> {{ payment.rejection_reason }}</p>
+        {% endif %}
+        {% if payment.reversal_of %}
+            <p style="margin-top: 1rem; color: var(--ink-soft);">
+                This entry reverses <a href="{% url 'payment_detail' payment.reversal_of.id %}">payment #{{ payment.reversal_of.id }}</a>.
+                Reason: {{ payment.reversal_reason }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-title"><h3>Attachments</h3></div>
+    <div class="form-row">
+        {% if payment.note_file %}
+            <div><label>Note File</label><a href="{{ payment.note_file.url }}" target="_blank" class="btn btn-secondary">Download</a></div>
+        {% endif %}
+        {% if payment.receipt_image %}
+            <div><label>Receipt</label><a href="{{ payment.receipt_image.url }}" target="_blank"><img src="{{ payment.receipt_image.url }}" style="max-width: 200px; border: 1px solid var(--gray-line);"></a></div>
+        {% endif %}
+        {% if payment.cheque_image %}
+            <div><label>Cheque</label><a href="{{ payment.cheque_image.url }}" target="_blank"><img src="{{ payment.cheque_image.url }}" style="max-width: 200px;"></a></div>
+        {% endif %}
+        {% if payment.hm_signature_image %}
+            <div><label>HM Signature</label><a href="{{ payment.hm_signature_image.url }}" target="_blank"><img src="{{ payment.hm_signature_image.url }}" style="max-width: 200px;"></a></div>
+        {% endif %}
+    </div>
+    {% if payment.finance_notes %}
+        <h4>Finance Notes</h4><p>{{ payment.finance_notes|linebreaks }}</p>
+    {% endif %}
+    {% if payment.it_admin_notes %}
+        <h4>IT Admin Notes</h4><p>{{ payment.it_admin_notes|linebreaks }}</p>
+    {% endif %}
+</div>
+{% endblock %}

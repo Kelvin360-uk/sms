@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ class.name }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Class</p><h1>{{ class.name }}</h1>
+    <p class="subtitle">{{ class.student_count }} students · {{ class.academic_year }}</p></div></div>
+
+<div class="panel"><div class="panel-title"><h3>Class Teacher</h3></div>
+    {% if class.class_teacher %}
+        <p>{{ class.class_teacher.full_name }} ({{ class.class_teacher.employee_id }})</p>
+    {% else %}<p class="muted">No class teacher assigned.</p>{% endif %}
+</div>
+
+<div class="panel" style="padding: 0;"><div class="panel-title" style="padding: 1.5rem;"><h3>Students</h3></div>
+    <table class="data-table">
+        <thead><tr><th>Student ID</th><th>Name</th><th>Gender</th><th>Parent Phone</th></tr></thead>
+        <tbody>
+        {% for s in students %}
+        <tr><td><a href="{% url 'student_detail' s.id %}">{{ s.student_id }}</a></td>
+            <td>{{ s.full_name }}</td><td>{{ s.get_gender_display }}</td><td>{{ s.parent_guardian_phone }}</td></tr>
+        {% empty %}<tr><td colspan="4" class="empty">No students enrolled.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Reverse Payment{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Reversal</p><h1>Reverse Payment</h1>
+    <p class="subtitle">Approved payments are immutable. Reversing creates an opposite ledger entry. The original is preserved for audit.</p></div></div>
+
+<div class="panel" style="max-width: 700px;">
+    <dl class="kv-list" style="margin-bottom: 1rem;">
+        <dt>Student</dt><dd>{{ payment.student.full_name }}</dd>
+        <dt>Amount</dt><dd>{{ payment.amount_paid }}</dd>
+        <dt>Approved</dt><dd>{{ payment.it_admin_approved_at }}</dd>
+    </dl>
+    <form method="post">{% csrf_token %}
+        <label>Reversal Reason *</label>
+        <textarea name="reason" rows="4" required placeholder="Explain why this payment is being reversed..."></textarea>
+        <div style="margin-top: 1rem;">
+            <button type="submit" class="btn btn-danger">Confirm Reversal</button>
+            <a href="{% url 'payment_detail' payment.id %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

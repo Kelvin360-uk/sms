@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Inbox{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><p class="eyebrow">Messages</p><h1>Inbox</h1></div>
+    <div>
+        <a href="{% url 'compose_message' %}" class="btn">+ Compose</a>
+        <a href="{% url 'sent_messages' %}" class="btn btn-secondary">Sent</a>
+    </div>
+</div>
+
+<div class="panel" style="padding: 0;">
+<table class="data-table">
+    <thead><tr><th>From</th><th>Subject</th><th>Category</th><th>Priority</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody>
+    {% for m in messages_list %}
+    <tr><td>{{ m.sender.get_full_name|default:m.sender.username }}</td>
+        <td><a href="{% url 'message_detail' m.id %}">{{ m.subject }}</a></td>
+        <td>{{ m.get_category_display }}</td>
+        <td><span class="status status-{% if m.priority == 'URGENT' %}rejected{% elif m.priority == 'HIGH' %}pending{% else %}draft{% endif %}">{{ m.get_priority_display }}</span></td>
+        <td><span class="status status-{{ m.status|lower }}">{{ m.get_status_display }}</span></td>
+        <td><small>{{ m.created_at|date:"M d, H:i" }}</small></td></tr>
+    {% empty %}<tr><td colspan="6" class="empty">No messages.</td></tr>{% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

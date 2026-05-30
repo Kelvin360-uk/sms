@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><p class="eyebrow">Inbox</p><h1>Notifications</h1></div>
+    <a href="{% url 'mark_all_notifications_read' %}" class="btn btn-secondary">Mark all read</a>
+</div>
+
+<div class="panel" style="padding: 0;">
+{% for n in notifications %}
+<div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--gray-soft); {% if not n.is_read %}background: var(--paper-warm);{% endif %}">
+    <div style="display: flex; justify-content: space-between; align-items: start;">
+        <div style="flex: 1;">
+            <h4 style="margin: 0 0 0.25rem;">{{ n.title }}</h4>
+            <p style="margin: 0;" class="small">{{ n.message }}</p>
+            <p class="muted small" style="margin: 0.5rem 0 0;">{{ n.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+        <div>
+            {% if n.link %}<a href="{% url 'mark_notification_read' n.id %}" class="btn btn-sm btn-secondary">Open</a>
+            {% elif not n.is_read %}<a href="{% url 'mark_notification_read' n.id %}" class="btn btn-sm btn-ghost">Mark read</a>{% endif %}
+        </div>
+    </div>
+</div>
+{% empty %}<div class="empty">No notifications.</div>{% endfor %}
+</div>
+{% endblock %}

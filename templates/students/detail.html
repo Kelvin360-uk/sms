@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}{{ student.full_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Student Profile</p>
+        <h1>{{ student.full_name }}</h1>
+        <p class="subtitle">{{ student.student_id }} · {{ student.current_class.name|default:"Unassigned" }}</p>
+    </div>
+    <div>
+        {% if user.is_it_admin %}
+            <a href="{% url 'edit_student' student.id %}" class="btn btn-secondary">Edit</a>
+        {% endif %}
+        <a href="{% url 'view_results' student.id %}" class="btn">Exam Results</a>
+    </div>
+</div>
+
+<div class="two-col">
+    <div class="panel">
+        <div class="panel-title"><h3>Personal</h3></div>
+        <dl class="kv-list">
+            <dt>DOB</dt><dd>{{ student.date_of_birth }}</dd>
+            <dt>Gender</dt><dd>{{ student.get_gender_display }}</dd>
+            <dt>Residence</dt><dd>{{ student.residence }}</dd>
+            <dt>Admission</dt><dd>{{ student.admission_date }}</dd>
+        </dl>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title"><h3>Parent / Guardian</h3></div>
+        <dl class="kv-list">
+            <dt>Name</dt><dd>{{ student.parent_guardian_name }}</dd>
+            <dt>Relation</dt><dd>{{ student.parent_guardian_relation }}</dd>
+            <dt>Phone</dt><dd>{{ student.parent_guardian_phone }}</dd>
+            <dt>Email</dt><dd>{{ student.parent_guardian_email|default:"—" }}</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-title"><h3>Fees & Payments</h3></div>
+    <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Total Due</div>
+            <div class="stat-value">{{ student.total_fees_due }}</div></div>
+        <div class="stat-card gold"><div class="stat-label">Paid</div>
+            <div class="stat-value">{{ student.total_fees_paid }}</div></div>
+        <div class="stat-card {% if student.outstanding_balance > 0 %}rust{% else %}gold{% endif %}">
+            <div class="stat-label">Outstanding</div>
+            <div class="stat-value">{{ student.outstanding_balance }}</div>
+        </div>
+    </div>
+
+    {% if payments %}
+    <h4 style="margin-top: 1.5rem;">Approved Payments</h4>
+    <table class="data-table">
+        <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Transaction</th><th>Note</th></tr></thead>
+        <tbody>
+        {% for p in payments %}
+        <tr><td>{{ p.payment_date|date:"Y-m-d" }}</td><td>{{ p.amount_paid }}</td>
+            <td>{{ p.get_payment_method_display }}</td><td>{{ p.transaction_id|default:"—" }}</td>
+            <td>{% if p.note_file %}<a href="{{ p.note_file.url }}" target="_blank">Download</a>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if pending_payments %}
+    <h4 style="margin-top: 1.5rem;">Pending Payments</h4>
+    <table class="data-table">
+        <thead><tr><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        {% for p in pending_payments %}
+        <tr><td>{{ p.created_at|date:"Y-m-d H:i" }}</td><td>{{ p.amount_paid }}</td>
+            <td><span class="status status-{{ p.status|lower }}">{{ p.get_status_display }}</span></td>
+            <td><a href="{% url 'payment_detail' p.id %}" class="btn btn-sm btn-secondary">View</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+
+{% if exam_results %}
+<div class="panel">
+    <div class="panel-title"><h3>Recent Exam Results</h3>
+        <a href="{% url 'view_results' student.id %}" class="small">All results →</a></div>
+    <table class="data-table">
+        <thead><tr><th>Session</th><th>Subject</th><th>Score</th><th>Grade</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for r in exam_results %}
+        <tr><td>{{ r.exam_session.name }}</td><td>{{ r.subject.code }}</td>
+            <td>{{ r.score }}/{{ r.max_score }}</td><td>{{ r.grade }}</td>
+            <td><span class="status status-{{ r.status|lower }}">{{ r.get_status_display }}</span></td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

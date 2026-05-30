@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Grant Download Access{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Security</p><h1>Grant Download Access</h1>
+    <p class="subtitle">Teachers cannot download data they uploaded unless you grant them explicit permission.</p></div></div>
+
+<div class="panel" style="max-width: 600px;"><form method="post">{% csrf_token %}
+    <label>Teacher *</label><select name="user_id" required>
+        {% for t in teachers %}<option value="{{ t.id }}">{{ t.username }} ({{ t.get_role_display }})</option>{% endfor %}
+    </select>
+    <div class="form-row" style="margin-top: 1rem;">
+        <div><label>Resource Type *</label><select name="resource_type" required>
+            <option value="exam_results">Exam Results</option>
+            <option value="student_data">Student Data</option>
+        </select></div>
+        <div><label>Hours Valid</label><input type="number" name="hours" value="24" min="1" max="168"></div>
+    </div>
+    <div style="margin-top: 1rem;">
+        <button type="submit" class="btn">Grant Access</button>
+        <a href="{% url 'user_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form></div>
+{% endblock %}

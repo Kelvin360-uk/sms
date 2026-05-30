@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Session Renewals{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Security</p><h1>Pending Session Renewal Requests</h1></div></div>
+
+<div class="panel" style="padding: 0;">
+<table class="data-table">
+    <thead><tr><th>User</th><th>Role</th><th>Reason</th><th>Requested</th><th></th></tr></thead>
+    <tbody>
+    {% for r in requests %}
+    <tr><td>{{ r.user.username }}</td><td>{{ r.user.get_role_display }}</td>
+        <td>{{ r.reason|default:"—" }}</td>
+        <td><small>{{ r.requested_at|date:"M d, H:i" }}</small></td>
+        <td>
+            <a href="{% url 'renewal_action' r.id 'approve' %}" class="btn btn-sm">Approve</a>
+            <a href="{% url 'renewal_action' r.id 'deny' %}" class="btn btn-sm btn-danger">Deny</a>
+        </td></tr>
+    {% empty %}<tr><td colspan="5" class="empty">No pending renewals.</td></tr>{% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}
